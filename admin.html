@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Leaderboard — Quiz Master</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #f4f6fa;
+    color: #222;
+    padding: 24px;
+  }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    padding: 24px 26px 32px;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 22px;
+    color: #1e3c72;
+  }
+  .sub {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 18px;
+  }
+  .controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  button, select, input {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid #c8cfd8;
+    background: #fff;
+    outline: none;
+  }
+  button {
+    background: #1e3c72;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  button:hover { background: #16305c; }
+  button.ghost {
+    background: #eef2f8;
+    color: #1e3c72;
+  }
+  button.ghost:hover { background: #dbe4f0; }
+
+  .stat-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .stat {
+    flex: 1 1 180px;
+    background: #eef4ff;
+    border-left: 4px solid #2a5298;
+    padding: 12px 14px;
+    border-radius: 8px;
+  }
+  .stat .label {
+    font-size: 12px;
+    color: #556;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e3c72;
+    margin-top: 2px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5e9f0;
+    vertical-align: middle;
+  }
+  th {
+    background: #f0f4fb;
+    color: #1e3c72;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    position: sticky;
+    top: 0;
+  }
+  tr:hover td { background: #fafcff; }
+  .rank-1 td { background: #fff8dc; font-weight: 600; }
+  .rank-2 td { background: #f7f7f7; }
+  .rank-3 td { background: #fbeee0; }
+
+  .rank-badge {
+    display: inline-block;
+    min-width: 28px;
+    text-align: center;
+    font-weight: 700;
+    color: #1e3c72;
+  }
+  .medal { font-size: 18px; }
+
+  .msg {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 15px;
+  }
+  .err {
+    background: #ffe0e0;
+    color: #b00020;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  .hidden { display: none; }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #e3edff;
+    color: #1e3c72;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  .search {
+    flex: 1;
+    min-width: 200px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🏆 Leaderboard — Quiz Master</h1>
+    <button class="ghost" id="refreshBtn">↻ Refresh</button>
+  </header>
+  <div class="sub">
+    Winner = highest correct answers, then fastest total time.
+    Ties in accuracy are broken by speed.
+  </div>
+
+  <div class="controls">
+    <select id="filterModule">
+      <option value="">All Modules</option>
+      <option>KOZHIKODE</option>
+      <option>THRISSUR</option>
+    </select>
+    <select id="filterOffice">
+      <option value="">All Offices</option>
+      <option>RBO1</option>
+      <option>RBO2</option>
+      <option>RBO3</option>
+      <option>RBO4</option>
+      <option>RBO5</option>
+      <option>RBO6</option>
+      <option>OTHERS</option>
+    </select>
+    <input class="search" id="searchBox" type="text" placeholder="Search by name or Emp No..." />
+  </div>
+
+  <div class="stat-row" id="statRow">
+    <div class="stat"><div class="label">Participants</div><div class="value" id="statCount">0</div></div>
+    <div class="stat"><div class="label">Top Score</div><div class="value" id="statTop">—</div></div>
+    <div class="stat"><div class="label">Fastest Time</div><div class="value" id="statFast">—</div></div>
+  </div>
+
+  <div id="errBox" class="err hidden"></div>
+  <div id="loadingMsg" class="msg">Loading leaderboard...</div>
+
+  <table id="lbTable" class="hidden">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Name</th>
+        <th>Emp No</th>
+        <th>Designation</th>
+        <th>Module</th>
+        <th>Office</th>
+        <th>Correct</th>
+        <th>Total Time</th>
+        <th>Submitted At</th>
+      </tr>
+    </thead>
+    <tbody id="lbBody"></tbody>
+  </table>
+
+</div>
+
+<script>
+/* ============================================================
+   >>> SAME Web App URL as in index.html <<<
+   ============================================================ */
+const API_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+let allRows = [];
+
+/* ---------- Load data ---------- */
+async function loadLeaderboard() {
+  document.getElementById('loadingMsg').classList.remove('hidden');
+  document.getElementById('lbTable').classList.add('hidden');
+  document.getElementById('errBox').classList.add('hidden');
+
+  try {
+    const res  = await fetch(`${API_URL}?action=leaderboard`);
+    const data = await res.json();
+
+    if (data.status !== 'ok') {
+      throw new Error(data.message || 'Unknown error');
+    }
+
+    allRows = data.data || [];
+    render();
+    document.getElementById('loadingMsg').classList.add('hidden');
+    document.getElementById('lbTable').classList.remove('hidden');
+  } catch (err) {
+    document.getElementById('loadingMsg').classList.add('hidden');
+    const box = document.getElementById('errBox');
+    box.textContent = 'Failed to load leaderboard: ' + err.message;
+    box.classList.remove('hidden');
+    console.error(err);
+  }
+}
+
+/* ---------- Render table ---------- */
+function render() {
+  const moduleFilter = document.getElementById('filterModule').value;
+  const officeFilter = document.getElementById('filterOffice').value;
+  const search       = document.getElementById('searchBox').value.trim().toLowerCase();
+
+  let rows = allRows.slice();
+
+  // Filter
+  if (moduleFilter) rows = rows.filter(r => r.module === moduleFilter);
+  if (officeFilter) rows = rows.filter(r => r.office === officeFilter);
+  if (search) {
+    rows = rows.filter(r =>
+      (r.name || '').toLowerCase().includes(search) ||
+      (r.empNo || '').toLowerCase().includes(search)
+    );
+  }
+
+  // Sort: correct desc, then totalTimeMs asc
+  rows.sort((a, b) => {
+    if (b.correct !== a.correct) return b.correct - a.correct;
+    return a.totalTimeMs - b.totalTimeMs;
+  });
+
+  // Stats
+  document.getElementById('statCount').textContent = rows.length;
+  if (rows.length) {
+    document.getElementById('statTop').textContent  = rows[0].correct;
+    const fastest = rows.reduce((min, r) =>
+      r.totalTimeMs < min.totalTimeMs ? r : min, rows[0]);
+    document.getElementById('statFast').textContent =
+      formatTime(fastest.totalTimeMs);
+  } else {
+    document.getElementById('statTop').textContent = '—';
+    document.getElementById('statFast').textContent = '—';
+  }
+
+  // Body
+  const tbody = document.getElementById('lbBody');
+  tbody.innerHTML = '';
+
+  if (!rows.length) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="9" class="msg">No matching entries yet.</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  rows.forEach((r, idx) => {
+    const rank = idx + 1;
+    const tr = document.createElement('tr');
+    if (rank === 1) tr.className = 'rank-1';
+    if (rank === 2) tr.className = 'rank-2';
+    if (rank === 3) tr.className = 'rank-3';
+
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+
+    tr.innerHTML = `
+      <td><span class="rank-badge">${rank}</span> <span class="medal">${medal}</span></td>
+      <td>${escapeHtml(r.name || '')}</td>
+      <td>${escapeHtml(r.empNo || '')}</td>
+      <td>${escapeHtml(r.designation || '')}</td>
+      <td>${escapeHtml(r.module || '')}</td>
+      <td>${escapeHtml(r.office || '')}</td>
+      <td><b>${r.correct}</b> / ${r.totalQuestions || 30}</td>
+      <td>${formatTime(r.totalTimeMs)}</td>
+      <td>${escapeHtml(r.timestamp || '')}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ---------- Helpers ---------- */
+function formatTime(ms) {
+  if (!ms && ms !== 0) return '—';
+  const totalSec = Math.round(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return min > 0 ? `${min}m ${sec}s` : `${sec}s`;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ---------- Events ---------- */
+document.getElementById('refreshBtn').addEventListener('click', loadLeaderboard);
+document.getElementById('filterModule').addEventListener('change', render);
+document.getElementById('filterOffice').addEventListener('change', render);
+document.getElementById('searchBox').addEventListener('input', render);
+
+/* Auto-refresh every 30 seconds */
+setInterval(loadLeaderboard, 30000);
+
+/* Initial load */
+loadLeaderboard();
+</script>
+</body>
+</html>
