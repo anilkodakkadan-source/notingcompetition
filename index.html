@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>हिंदी क्विज़ / Hindi Quiz</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #222;
+  }
+  .container {
+    background: #fff;
+    width: 100%;
+    max-width: 720px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    padding: 28px 30px 34px;
+  }
+  h1 {
+    font-size: 22px;
+    text-align: center;
+    color: #1e3c72;
+    margin-bottom: 6px;
+  }
+  h2.sub {
+    font-size: 15px;
+    text-align: center;
+    color: #666;
+    font-weight: 500;
+    margin-bottom: 22px;
+  }
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 12px 0 5px;
+    color: #333;
+  }
+  input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #c8cfd8;
+    border-radius: 8px;
+    font-size: 15px;
+    background: #f9fafc;
+    outline: none;
+    transition: border .2s;
+  }
+  input:focus, select:focus { border-color: #2a5298; background: #fff; }
+
+  button {
+    background: #1e3c72;
+    color: #fff;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: background .2s;
+  }
+  button:hover:not(:disabled) { background: #16305c; }
+  button:disabled { background: #a3a9b4; cursor: not-allowed; }
+
+  .rules {
+    background: #eef4ff;
+    border-left: 4px solid #2a5298;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    color: #1e3c72;
+  }
+  .rules ul { margin-left: 18px; }
+  .rules li { margin: 3px 0; }
+
+  /* Quiz screen */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e3c72;
+    margin-bottom: 12px;
+  }
+  .timer {
+    background: #ffe8e8;
+    color: #c0392b;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+  .progress-wrap {
+    background: #e6e9ef;
+    height: 10px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2a5298, #6ea8fe);
+    transition: width 1s linear;
+  }
+  .question {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    line-height: 1.5;
+    color: #111;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1.5px solid #d0d6df;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all .15s;
+    font-size: 15px;
+  }
+  .option:hover { border-color: #2a5298; background: #f4f8ff; }
+  .option.selected {
+    border-color: #2a5298;
+    background: #e3edff;
+    font-weight: 600;
+  }
+  .option input { width: auto; margin: 0; }
+
+  .center-msg {
+    text-align: center;
+    padding: 30px 10px;
+  }
+  .center-msg h2 {
+    color: #1e3c72;
+    margin-bottom: 12px;
+    font-size: 22px;
+  }
+  .center-msg p {
+    color: #444;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 6px;
+  }
+  .tick {
+    font-size: 52px;
+    color: #27ae60;
+    margin-bottom: 10px;
+  }
+  .hidden { display: none; }
+  .err {
+    background: #ffe0e0;
+    color: #b00020;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 14px;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ================= REGISTRATION ================= -->
+  <div id="regScreen">
+    <h1>हिंदी क्विज़ / Hindi Quiz</h1>
+    <h2 class="sub">कृपया अपनी जानकारी भरें / Please fill your details</h2>
+
+    <div class="rules">
+      <b>नियम / Rules:</b>
+      <ul>
+        <li>कुल 30 प्रश्न / Total 30 questions</li>
+        <li>प्रति प्रश्न <span id="spqLabel">30</span> सेकंड / <span id="spqLabel2">30</span> seconds per question</li>
+        <li>विजेता = सर्वाधिक सही उत्तर + सबसे कम समय / Winner = most correct + fastest</li>
+        <li>अंक नहीं दिखाए जाएंगे / Marks will NOT be shown</li>
+      </ul>
+    </div>
+
+    <label>नाम / Name *</label>
+    <input id="name" type="text" placeholder="अपना नाम लिखें" />
+
+    <label>पद / Designation *</label>
+    <input id="designation" type="text" placeholder="Designation" />
+
+    <label>कर्मचारी संख्या / Emp. Number *</label>
+    <input id="empNo" type="text" placeholder="Employee Number" />
+
+    <label>मोबाइल / Mobile Number *</label>
+    <input id="mobile" type="tel" placeholder="10-digit mobile" maxlength="10" />
+
+    <label>मॉड्यूल / Module *</label>
+    <select id="module">
+      <option value="">-- चुनें / Select --</option>
+      <option>KOZHIKODE</option>
+      <option>THRISSUR</option>
+    </select>
+
+    <label>कार्यालय / Office *</label>
+    <select id="office">
+      <option value="">-- चुनें / Select --</option>
+      <option>RBO1</option>
+      <option>RBO2</option>
+      <option>RBO3</option>
+      <option>RBO4</option>
+      <option>RBO5</option>
+      <option>RBO6</option>
+      <option>OTHERS</option>
+    </select>
+
+    <label>मातृभाषा / Mother Tongue *</label>
+    <select id="motherTongue">
+      <option value="">-- चुनें / Select --</option>
+      <option>HINDI</option>
+      <option>MALAYALAM</option>
+      <option>OTHERS</option>
+    </select>
+
+    <button id="startBtn">क्विज़ शुरू करें / Start Quiz</button>
+    <div id="regErr" class="err hidden"></div>
+  </div>
+
+  <!-- ================= QUIZ ================= -->
+  <div id="quizScreen" class="hidden">
+    <div class="topbar">
+      <span>प्रश्न / Question <span id="qNum">1</span> / <span id="qTotal">30</span></span>
+      <span class="timer" id="timerDisplay">30s</span>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+    <div class="question" id="questionText"></div>
+    <div id="optionsBox"></div>
+
+    <button id="nextBtn" disabled>अगला / Next</button>
+  </div>
+
+  <!-- ================= SUBMITTED ================= -->
+  <div id="doneScreen" class="hidden">
+    <div class="center-msg">
+      <div class="tick">✔</div>
+      <h2>उत्तर सफलतापूर्वक सबमिट किया गया</h2>
+      <p>Quiz submitted successfully.</p>
+      <p>आपके अंक नहीं दिखाए जाएंगे। विजेता की घोषणा बाद में की जाएगी।</p>
+      <p>Your marks will not be shown. Winner will be announced later.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   >>> EDIT THIS LINE: paste your Apps Script Web App URL here <<<
+   ============================================================ */
+const API_URL = 'https://script.google.com/macros/s/AKfycbzIzoodC4ebzcEEBWeIe0RtFCC--2oC9HlRhOgqEoemwgrKxuwEyF_9zwtc_wGYgc9x/exec';
+
+/* ============================================================
+   Quiz state
+   ============================================================ */
+let SECONDS_PER_QUESTION = 30;   // will be overwritten by backend config
+let questions = [];
+let currentIndex = 0;
+let answers = [];                // [{ q, chosen }]
+let timerHandle = null;
+let timeLeft = 0;
+let quizStartTime = 0;
+let quizEndTime = 0;
+
+/* ============================================================
+   Load config from backend, then enable the Start button
+   ============================================================ */
+(async function loadConfig() {
+  try {
+    const res = await fetch(`${API_URL}?action=config`);
+    const data = await res.json();
+    if (data.status === 'ok') {
+      SECONDS_PER_QUESTION = data.secondsPerQuestion || 30;
+      document.getElementById('spqLabel').textContent  = SECONDS_PER_QUESTION;
+      document.getElementById('spqLabel2').textContent = SECONDS_PER_QUESTION;
+
+      // Check time window
+      const now   = Date.now();
+      const start = new Date(data.startTime).getTime();
+      const end   = new Date(data.endTime).getTime();
+      if (now < start) {
+        showFatal('क्विज़ अभी शुरू नहीं हुआ है। / Quiz has not started yet.');
+      } else if (now > end) {
+        showFatal('क्विज़ समाप्त हो चुका है। / Quiz has ended.');
+      }
+    }
+  } catch (err) {
+    console.error('Config load failed', err);
+  }
+})();
+
+function showFatal(msg) {
+  document.getElementById('regScreen').innerHTML =
+    `<div class="center-msg"><h2>${msg}</h2></div>`;
+}
+
+/* ============================================================
+   Start button
+   ============================================================ */
+document.getElementById('startBtn').addEventListener('click', startQuiz);
+
+async function startQuiz() {
+  const fields = {
+    name:         document.getElementById('name').value.trim(),
+    designation:  document.getElementById('designation').value.trim(),
+    empNo:        document.getElementById('empNo').value.trim(),
+    mobile:       document.getElementById('mobile').value.trim(),
+    module:       document.getElementById('module').value,
+    office:       document.getElementById('office').value,
+    motherTongue: document.getElementById('motherTongue').value
+  };
+
+  const errBox = document.getElementById('regErr');
+  errBox.classList.add('hidden');
+
+  // Validate
+  for (const k in fields) {
+    if (!fields[k]) {
+      errBox.textContent = 'कृपया सभी फ़ील्ड भरें / Please fill all fields';
+      errBox.classList.remove('hidden');
+      return;
+    }
+  }
+  if (!/^[0-9]{10}$/.test(fields.mobile)) {
+    errBox.textContent = 'मोबाइल नंबर 10 अंकों का होना चाहिए / Mobile must be 10 digits';
+    errBox.classList.remove('hidden');
+    return;
+  }
+
+  // Fetch questions
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('startBtn').textContent = 'लोड हो रहा है... / Loading...';
+
+  try {
+    const res  = await fetch(`${API_URL}?action=questions`);
+    const data = await res.json();
+    if (data.status !== 'ok' || !data.questions || data.questions.length === 0) {
+      throw new Error('No questions received');
+    }
+    questions = data.questions;
+
+    // Store registration data on window for later
+    window.__registration = fields;
+
+    // Switch screens
+    document.getElementById('regScreen').classList.add('hidden');
+    document.getElementById('quizScreen').classList.remove('hidden');
+    document.getElementById('qTotal').textContent = questions.length;
+
+    quizStartTime = Date.now();
+    currentIndex = 0;
+    answers = [];
+
+    renderQuestion();
+  } catch (err) {
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('startBtn').textContent = 'क्विज़ शुरू करें / Start Quiz';
+    errBox.textContent = 'प्रश्न लोड नहीं हो पाए / Failed to load questions';
+    errBox.classList.remove('hidden');
+    console.error(err);
+  }
+}
+
+/* ============================================================
+   Render current question
+   ============================================================ */
+function renderQuestion() {
+  const q = questions[currentIndex];
+  document.getElementById('qNum').textContent = currentIndex + 1;
+  document.getElementById('questionText').textContent = q.q;
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML = '';
+  const opts = [
+    { key: 'A', text: q.a },
+    { key: 'B', text: q.b },
+    { key: 'C', text: q.c },
+    { key: 'D', text: q.d }
+  ];
+
+  opts.forEach(o => {
+    const div = document.createElement('label');
+    div.className = 'option';
+    div.innerHTML = `<input type="radio" name="opt" value="${o.key}">
+                     <span><b>${o.key}.</b> ${escapeHtml(o.text)}</span>`;
+    div.addEventListener('click', () => {
+      document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+      div.classList.add('selected');
+      document.getElementById('nextBtn').disabled = false;
+    });
+    box.appendChild(div);
+  });
+
+  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('nextBtn').textContent =
+    (currentIndex === questions.length - 1) ? 'सबमिट करें / Submit' : 'अगला / Next';
+
+  startTimer();
+}
+
+/* ============================================================
+   Timer + progress bar (progress bar = time remaining)
+   ============================================================ */
+function startTimer() {
+  clearInterval(timerHandle);
+  timeLeft = SECONDS_PER_QUESTION;
+  updateTimerUI();
+
+  timerHandle = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerHandle);
+      // Auto move on (store empty answer)
+      saveCurrentAnswer(true);
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  document.getElementById('timerDisplay').textContent = timeLeft + 's';
+  const pct = ((SECONDS_PER_QUESTION - timeLeft) / SECONDS_PER_QUESTION) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+/* ============================================================
+   Next button
+   ============================================================ */
+document.getElementById('nextBtn').addEventListener('click', () => saveCurrentAnswer(false));
+
+function saveCurrentAnswer(autoTimeout) {
+  clearInterval(timerHandle);
+
+  const chosenEl = document.querySelector('input[name="opt"]:checked');
+  const chosen   = chosenEl ? chosenEl.value : '';
+
+  answers.push({ q: questions[currentIndex].q, chosen });
+
+  currentIndex++;
+
+  if (currentIndex >= questions.length) {
+    submitQuiz();
+  } else {
+    renderQuestion();
+  }
+}
+
+/* ============================================================
+   Submit
+   ============================================================ */
+async function submitQuiz() {
+  quizEndTime = Date.now();
+  const totalTimeMs = quizEndTime - quizStartTime;
+
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('doneScreen').classList.remove('hidden');
+
+  const reg = window.__registration;
+
+  const body = new URLSearchParams({
+    action:      'submit',
+    name:        reg.name,
+    designation: reg.designation,
+    empNo:       reg.empNo,
+    mobile:      reg.mobile,
+    module:      reg.module,
+    office:      reg.office,
+    motherTongue:reg.motherTongue,
+    totalTimeMs: totalTimeMs.toString(),
+    answers:     JSON.stringify(answers)
+  });
+
+  try {
+    await fetch(API_URL, { method: 'POST', body });
+  } catch (err) {
+    console.error('Submit failed', err);
+    // Even if network fails, we already showed success. Optionally you can retry.
+  }
+}
+
+/* ============================================================
+   Utility
+   ============================================================ */
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+</script>
+</body>
+</html>
