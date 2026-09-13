@@ -219,7 +219,7 @@
       <option>RBO4</option>
       <option>RBO5</option>
       <option>RBO6</option>
-      <option>OTHERS</option>
+      <option>AO</option>
     </select>
 
     <label>मातृभाषा / Mother Tongue *</label>
@@ -343,18 +343,42 @@ async function startQuiz() {
     errBox.classList.remove('hidden');
     return;
   }
-
+if (!/^[0-9]{7}$/.test(fields.empNo)) {
+  errBox.textContent = 'कर्मचारी संख्या 7 अंकों की होनी चाहिए / Emp. Number must be 7 digits';
+  errBox.classList.remove('hidden');
+  return;
+}
   // Fetch questions
   document.getElementById('startBtn').disabled = true;
   document.getElementById('startBtn').textContent = 'लोड हो रहा है... / Loading...';
+// Show loading state
+document.getElementById('startBtn').disabled = true;
+document.getElementById('startBtn').textContent = 'जाँच हो रही है... / Checking...';
 
-  try {
-    const res  = await fetch(`${API_URL}?action=questions`);
-    const data = await res.json();
-    if (data.status !== 'ok' || !data.questions || data.questions.length === 0) {
-      throw new Error('No questions received');
-    }
-    questions = data.questions;
+try {
+  // STEP 1: Check if this Emp Number has already attempted
+  const checkRes = await fetch(`${API_URL}?action=checkEmp&empNo=${encodeURIComponent(fields.empNo)}`);
+  const checkData = await checkRes.json();
+
+  if (checkData.status !== 'ok') {
+    throw new Error('Uniqueness check failed');
+  }
+  if (checkData.exists) {
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('startBtn').textContent = 'क्विज़ शुरू करें / Start Quiz';
+    errBox.textContent = 'इस कर्मचारी संख्या ने पहले ही प्रयास कर लिया है / This Emp. Number has already attempted the quiz';
+    errBox.classList.remove('hidden');
+    return;
+  }
+
+  // STEP 2: Fetch questions
+  document.getElementById('startBtn').textContent = 'लोड हो रहा है... / Loading...';
+  const res  = await fetch(`${API_URL}?action=questions`);
+  const data = await res.json();
+  if (data.status !== 'ok' || !data.questions || data.questions.length === 0) {
+    throw new Error('No questions received');
+  }
+  questions = data.questions;
 
     // Store registration data on window for later
     window.__registration = fields;
