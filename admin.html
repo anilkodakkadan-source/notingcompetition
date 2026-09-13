@@ -28,91 +28,41 @@
     gap: 12px;
     margin-bottom: 8px;
   }
-  h1 {
-    font-size: 22px;
-    color: #1e3c72;
-  }
-  .sub {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 18px;
-  }
-  .controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
+  h1 { font-size: 22px; color: #1e3c72; }
+  .sub { font-size: 13px; color: #666; margin-bottom: 18px; }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
   button, select, input {
-    font-family: inherit;
-    font-size: 14px;
-    padding: 9px 14px;
-    border-radius: 8px;
-    border: 1px solid #c8cfd8;
-    background: #fff;
-    outline: none;
+    font-family: inherit; font-size: 14px; padding: 9px 14px;
+    border-radius: 8px; border: 1px solid #c8cfd8; background: #fff; outline: none;
   }
   button {
-    background: #1e3c72;
-    color: #fff;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .2s;
+    background: #1e3c72; color: #fff; border: none;
+    font-weight: 600; cursor: pointer; transition: background .2s;
   }
   button:hover { background: #16305c; }
-  button.ghost {
-    background: #eef2f8;
-    color: #1e3c72;
-  }
+  button.ghost { background: #eef2f8; color: #1e3c72; }
   button.ghost:hover { background: #dbe4f0; }
 
-  .stat-row {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 18px;
-  }
+  .stat-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
   .stat {
-    flex: 1 1 180px;
-    background: #eef4ff;
-    border-left: 4px solid #2a5298;
-    padding: 12px 14px;
-    border-radius: 8px;
+    flex: 1 1 180px; background: #eef4ff; border-left: 4px solid #2a5298;
+    padding: 12px 14px; border-radius: 8px;
   }
   .stat .label {
-    font-size: 12px;
-    color: #556;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 12px; color: #556; text-transform: uppercase; letter-spacing: 0.5px;
   }
   .stat .value {
-    font-size: 22px;
-    font-weight: 700;
-    color: #1e3c72;
-    margin-top: 2px;
+    font-size: 22px; font-weight: 700; color: #1e3c72; margin-top: 2px;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
   th, td {
-    text-align: left;
-    padding: 10px 12px;
-    border-bottom: 1px solid #e5e9f0;
-    vertical-align: middle;
+    text-align: left; padding: 10px 12px;
+    border-bottom: 1px solid #e5e9f0; vertical-align: middle;
   }
   th {
-    background: #f0f4fb;
-    color: #1e3c72;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    position: sticky;
-    top: 0;
+    background: #f0f4fb; color: #1e3c72; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.4px; position: sticky; top: 0;
   }
   tr:hover td { background: #fafcff; }
   .rank-1 td { background: #fff8dc; font-weight: 600; }
@@ -120,45 +70,18 @@
   .rank-3 td { background: #fbeee0; }
 
   .rank-badge {
-    display: inline-block;
-    min-width: 28px;
-    text-align: center;
-    font-weight: 700;
-    color: #1e3c72;
+    display: inline-block; min-width: 28px; text-align: center;
+    font-weight: 700; color: #1e3c72;
   }
   .medal { font-size: 18px; }
 
-  .msg {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-    font-size: 15px;
-  }
+  .msg { text-align: center; padding: 40px 20px; color: #666; font-size: 15px; }
   .err {
-    background: #ffe0e0;
-    color: #b00020;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin: 14px 0;
-    font-size: 14px;
+    background: #ffe0e0; color: #b00020; padding: 12px 16px;
+    border-radius: 8px; margin: 14px 0; font-size: 14px;
   }
   .hidden { display: none; }
-
-  .badge {
-    display: inline-block;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    background: #e3edff;
-    color: #1e3c72;
-    font-weight: 600;
-    margin-left: 6px;
-  }
-
-  .search {
-    flex: 1;
-    min-width: 200px;
-  }
+  .search { flex: 1; min-width: 200px; }
 </style>
 </head>
 <body>
@@ -192,7 +115,7 @@
     <input class="search" id="searchBox" type="text" placeholder="Search by name or Emp No..." />
   </div>
 
-  <div class="stat-row" id="statRow">
+  <div class="stat-row">
     <div class="stat"><div class="label">Participants</div><div class="value" id="statCount">0</div></div>
     <div class="stat"><div class="label">Top Score</div><div class="value" id="statTop">—</div></div>
     <div class="stat"><div class="label">Fastest Time</div><div class="value" id="statFast">—</div></div>
@@ -222,40 +145,56 @@
 
 <script>
 /* ============================================================
-   >>> SAME Web App URL as in index.html <<<
+   >>> PASTE YOUR APPS SCRIPT WEB APP URL HERE <<<
+   (Same URL you used in index.html — must end in /exec)
    ============================================================ */
 const API_URL = 'https://script.google.com/macros/s/AKfycbzIzoodC4ebzcEEBWeIe0RtFCC--2oC9HlRhOgqEoemwgrKxuwEyF_9zwtc_wGYgc9x/exec';
 
 let allRows = [];
 
-/* ---------- Load data ---------- */
-async function loadLeaderboard() {
+/* ---------- Load data via JSONP (avoids CORS on GitHub Pages) ---------- */
+function loadLeaderboard() {
   document.getElementById('loadingMsg').classList.remove('hidden');
   document.getElementById('lbTable').classList.add('hidden');
   document.getElementById('errBox').classList.add('hidden');
 
-  try {
-    const res  = await fetch(`${API_URL}?action=leaderboard`);
-    const data = await res.json();
+  const cbName = 'lbCallback_' + Date.now() + '_' + Math.floor(Math.random()*1000);
 
-    if (data.status !== 'ok') {
-      throw new Error(data.message || 'Unknown error');
+  // Register callback
+  window[cbName] = function(payload) {
+    try {
+      if (!payload || payload.status !== 'ok') {
+        throw new Error((payload && payload.message) || 'Unknown error');
+      }
+      allRows = payload.data || [];
+      render();
+      document.getElementById('loadingMsg').classList.add('hidden');
+      document.getElementById('lbTable').classList.remove('hidden');
+    } catch (err) {
+      showErr(err.message);
+    } finally {
+      try { delete window[cbName]; } catch (e) {}
+      if (scriptEl && scriptEl.parentNode) scriptEl.parentNode.removeChild(scriptEl);
     }
+  };
 
-    allRows = data.data || [];
-    render();
-    document.getElementById('loadingMsg').classList.add('hidden');
-    document.getElementById('lbTable').classList.remove('hidden');
-  } catch (err) {
-    document.getElementById('loadingMsg').classList.add('hidden');
-    const box = document.getElementById('errBox');
-    box.textContent = 'Failed to load leaderboard: ' + err.message;
-    box.classList.remove('hidden');
-    console.error(err);
-  }
+  const scriptEl = document.createElement('script');
+  scriptEl.src = API_URL + '?action=leaderboard&callback=' + cbName + '&_=' + Date.now();
+  scriptEl.onerror = function() {
+    showErr('Failed to reach backend. Check API_URL.');
+    try { delete window[cbName]; } catch (e) {}
+  };
+  document.body.appendChild(scriptEl);
 }
 
-/* ---------- Render table ---------- */
+function showErr(msg) {
+  document.getElementById('loadingMsg').classList.add('hidden');
+  const box = document.getElementById('errBox');
+  box.textContent = 'Failed to load leaderboard: ' + msg;
+  box.classList.remove('hidden');
+}
+
+/* ---------- Render ---------- */
 function render() {
   const moduleFilter = document.getElementById('filterModule').value;
   const officeFilter = document.getElementById('filterOffice').value;
@@ -263,7 +202,6 @@ function render() {
 
   let rows = allRows.slice();
 
-  // Filter
   if (moduleFilter) rows = rows.filter(r => r.module === moduleFilter);
   if (officeFilter) rows = rows.filter(r => r.office === officeFilter);
   if (search) {
@@ -273,26 +211,22 @@ function render() {
     );
   }
 
-  // Sort: correct desc, then totalTimeMs asc
   rows.sort((a, b) => {
     if (b.correct !== a.correct) return b.correct - a.correct;
     return a.totalTimeMs - b.totalTimeMs;
   });
 
-  // Stats
   document.getElementById('statCount').textContent = rows.length;
   if (rows.length) {
-    document.getElementById('statTop').textContent  = rows[0].correct;
+    document.getElementById('statTop').textContent = rows[0].correct;
     const fastest = rows.reduce((min, r) =>
       r.totalTimeMs < min.totalTimeMs ? r : min, rows[0]);
-    document.getElementById('statFast').textContent =
-      formatTime(fastest.totalTimeMs);
+    document.getElementById('statFast').textContent = formatTime(fastest.totalTimeMs);
   } else {
     document.getElementById('statTop').textContent = '—';
     document.getElementById('statFast').textContent = '—';
   }
 
-  // Body
   const tbody = document.getElementById('lbBody');
   tbody.innerHTML = '';
 
